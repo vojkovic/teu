@@ -4,7 +4,18 @@ GitOps, made easy.
 
 > **Note:** teu is currently in v0. This means that it is still under development and may have some bugs or incomplete features. Please use it with caution and report any issues you encounter. It's not recommended yet to use teu in production.
 
-
+### TODO:
+- [x] Secret Decryption with age.
+- [ ] Smart Git Fetching.
+- [ ] Status of deployment in database.
+- [ ] teu.yaml tracking.
+- [ ] `teu status` showing all deployment status.
+- [ ] e2e tests.
+- [ ] Better error handling.
+- [ ] Deployments should be fully isolated, soft fail if one can't start.
+- [ ] Better logging.
+- [ ] Script to add systemd service.
+- [ ] Release v1.0.0
 
 ## What is teu?
 teu is a program writen in go which allows you to orchestrate containers in a dead simple way.
@@ -33,7 +44,7 @@ A teu.yml file is a simple yaml file which points to a directory containing a do
 Here's a really basic example:
 
 ```yaml
-slate:
+teu:
   name: production
   description: Production environment
   age_secret_key: /root/secrets/age-secret.key
