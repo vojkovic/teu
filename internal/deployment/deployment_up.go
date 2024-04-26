@@ -8,12 +8,11 @@ import (
 
 	"github.com/vojkovic/teu/config"
 	"github.com/vojkovic/teu/internal/db"
-	"github.com/vojkovic/teu/pkg/common"
 )
 
 func DeploymentUp(path string) error {
 	
-	err := common.IsTeuRepo(path)
+	err := config.IsTeuRepo(path)
 	if err != nil {
 		return err
 	}

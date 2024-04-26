@@ -10,7 +10,6 @@ import (
 	"github.com/vojkovic/teu/internal/db"
 	"github.com/vojkovic/teu/internal/deployment"
 	"github.com/vojkovic/teu/internal/git"
-	"github.com/vojkovic/teu/pkg/common"
 )
 
 func reconcile() error {
@@ -31,7 +30,7 @@ func reconcile() error {
 	// if there are any differences, update the database
 	
 	// read teu.yml, list applications as a slice of strings
-	err = common.IsTeuRepo(teu_repository_path)
+	err = config.IsTeuRepo(teu_repository_path)
 	if err != nil {
 		return err
 	}

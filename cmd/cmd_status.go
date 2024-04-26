@@ -3,14 +3,16 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
 	"github.com/urfave/cli/v2"
 
 	"github.com/vojkovic/teu/internal/db"
-	"github.com/vojkovic/teu/pkg/common"
+	"github.com/vojkovic/teu/internal/deployment"
 )
 
 func createStatus() *cli.Command {
@@ -64,14 +66,14 @@ func printNodeInfoTable() error {
 		return err
 	}
 
-	lastPull = common.ConvertUnixToHumanReadable(lastPull)
+	lastPull = ConvertUnixToHumanReadable(lastPull)
 
 	lastCommit, err := db.GetRepositoryLastCommitFromDatabase()
 	if err != nil {
 		return err
 	}
 
-	lastCommit = common.ConvertUnixToHumanReadable(lastCommit)
+	lastCommit = ConvertUnixToHumanReadable(lastCommit)
 
 	table.DefaultHeaderFormatter = func(format string, vals ...interface{}) string {
 		return strings.ToUpper(fmt.Sprintf(format, vals...))
@@ -82,7 +84,7 @@ func printNodeInfoTable() error {
 
 	tbl := table.New("Information","").WithPadding(3).WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 	
-	tbl.AddRow("Node Name",common.GetHostname())
+	tbl.AddRow("Node Name",deployment.GetHostname())
 	tbl.AddRow("Repository", git_repository)
 	tbl.AddRow("Last Pull",lastPull)
 	tbl.AddRow("Last Commit",lastCommit)
@@ -90,4 +92,44 @@ func printNodeInfoTable() error {
 	tbl.Print()
 
 	return nil
+}
+
+
+// ConvertUnixToHumanReadable converts Unix timestamp to human-readable format
+func ConvertUnixToHumanReadable(unixTimeStr string) string {
+	unixTime, err := strconv.ParseInt(unixTimeStr, 10, 64)
+	if err != nil {
+		return "Invalid Unix timestamp"
+	}
+
+	// Convert Unix timestamp to time object
+	timestamp := time.Unix(unixTime, 0)
+
+	// Calculate time difference
+	diff := time.Since(timestamp)
+
+	// Convert time difference to human-readable format
+	switch {
+	case diff.Seconds() < 60:
+		if int(diff.Seconds()) == 1 {
+			return "1 second ago"
+		}
+		return fmt.Sprintf("%d seconds ago", int(diff.Seconds()))
+	case diff.Minutes() < 60:
+		if int(diff.Minutes()) == 1 {
+			return "1 minute ago"
+		}
+		return fmt.Sprintf("%d minutes ago", int(diff.Minutes()))
+	case diff.Hours() < 24:
+		if int(diff.Hours()) == 1 {
+			return "1 hour ago"
+		}
+		return fmt.Sprintf("%d hours ago", int(diff.Hours()))
+	default:
+		days := int(diff.Hours() / 24)
+		if days == 1 {
+			return "1 day ago"
+		}
+		return fmt.Sprintf("%d days ago", days)
+	}
 }
